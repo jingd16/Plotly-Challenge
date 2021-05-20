@@ -15,18 +15,18 @@ d3.json("samples.json").then((importedData) => {
     
     var otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
 
-   
+    //Convert ID to strings, in order to plot yaxis
     var strOtuIDs=[]
     for (i=0; i<10; i++) {
         strOtuIDs.push(String(otuIDs[i]));
     };
 
-   var IDs=strOtuIDs[0].split(",")
-   console.log(IDs);
-
-   for (i=0; i<10; i++) {
+  
+    //Create create yaxis names
+    var IDs=strOtuIDs[0].split(",")
+    for (i=0; i<10; i++) {
        IDs[i] = `OTU ${IDs[i]}`;
-   };
+    };
 
     var otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
     //console.log(strOtuIDs);
@@ -37,6 +37,7 @@ d3.json("samples.json").then((importedData) => {
         x: sampleValues[0],
         y: IDs,
         type: "bar",
+        text: otuLabels[0],
         orientation: 'h'
     };
 
