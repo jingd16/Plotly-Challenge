@@ -1,7 +1,7 @@
 //Use the D3 library to read in samples.json
 d3.json("samples.json").then((importedData) => {
     var data = importedData[0];
-   console.log(data);
+   //console.log(data);
 
     //Take out sample as an array
     var samples = data.samples;
@@ -14,14 +14,28 @@ d3.json("samples.json").then((importedData) => {
     sampleValues = sampleValues.map(object => object.slice(0,10));
     
     var otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
+
+   
+    var strOtuIDs=[]
+    for (i=0; i<10; i++) {
+        strOtuIDs.push(String(otuIDs[i]));
+    };
+
+   var IDs=strOtuIDs[0].split(",")
+   console.log(IDs);
+
+   for (i=0; i<10; i++) {
+       IDs[i] = `OTU ${IDs[i]}`;
+   };
+
     var otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
-    console.log(otuIDs[0]);
-    console.log(otuLabels[0]);
-    console.log(sampleValues[0]);
+    //console.log(strOtuIDs);
+    //console.log(otuLabels[0]);
+    //console.log(sampleValues[0]);
     
     var trace1 = {
         x: sampleValues[0],
-       // y: `OTU${otuIDs[0]}`,
+        y: IDs,
         type: "bar",
         orientation: 'h'
     };
@@ -33,6 +47,5 @@ d3.json("samples.json").then((importedData) => {
     };
 
     Plotly.newPlot("bar", data, layout);
-
 
 });
