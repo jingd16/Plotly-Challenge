@@ -5,14 +5,7 @@ var selection = d3.select("#selDataset");
 function buildOptions() {
     d3.json("samples.json").then((importedData) => {
     var data = importedData[0];
-    // var sampleID = data.names;
 
-    
-    // var option = selection.select("option")
-    // for (var i = 0; i < sampleID.length; i++) {
-     
-    //   selection.append("option").text(sampleID[i]);
-    
     data.names.forEach((name) => {
         var appendOption = selection.append("option").text(name).attr('value',name);
     });
@@ -46,10 +39,10 @@ function getData() {
         var samples = data.samples;
 
         //get all the data required from sample
-        sampleValuesAll = samples.map(object => object.sample_values);
+        sampleValuesAll = samples.map(object => object.sample_values);//Save all data for bubble chart
         sampleValues = sampleValuesAll.map(object => object.slice(0,10));
         otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
-        otuIDsAll = data.samples.map(object => object.otu_ids);
+        otuIDsAll = data.samples.map(object => object.otu_ids); //Save all data for bubble chart
         otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
 
         sampleID = data.names;
@@ -62,6 +55,7 @@ function getData() {
         metaLocation = data.metadata.map(object => object.location)
         metaWfreq = data.metadata.map(object => object.wfreq);
 
+        //initialise the bar chart to display 1st sample
         buildPlot(otuIDs, sampleValues, otuLabels, 0);
         
     })    
@@ -138,13 +132,14 @@ function buildPlot(otuIDs,
     metaSelection.append("li").text(`gender: ${metaGender[sampleIndex]}`);
     metaSelection.append("li").text(`location: ${metaLocation[sampleIndex]}`);
     metaSelection.append("li").text(`wfreq: ${metaWfreq[sampleIndex]}`);  
-
 };
 
 buildOptions();
 
 function optionChanged(chosen) {
     console.log(chosen);
+    metaSelection.html("");
+
         
         //Find matching value choosen, return index number for ploting.
         for (var i=0; i<otuIDs.length; i++) {
