@@ -22,10 +22,15 @@ function buildOptions() {
 }
 
 //STEP 2: Get data from Json file
+
+//define all variable outside function, so they are global and can be used with different function.
 var sampleValues=[];
+var sampleValuesAll=[];
 var otuIDs = [];
 var otuLabels = [];
 var sampleID=[];
+var otuIDsAll=[];
+var otuLabelsAll=[];
 
 var metaAge=[];
 var metaBbtype=[];
@@ -38,24 +43,18 @@ function getData() {
         var data = importedData[0];
         console.log(data);
 
-        //Take out sample as an array
         var samples = data.samples;
-        //console.log(samples.length)
-        //var meta = data.metadata;
 
-        // //Take out sample_value as an array & slice to top 10
-        // sampleValues = samples.map(object => object.sample_values);
-        // sampleValues = sampleValues.map(object => object.slice(0,10));
-        // otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
-        // otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
-        // sampleID = data.names;
-
-        sampleValues = samples.map(object => object.sample_values);
-        sampleValues = sampleValues.map(object => object.slice(0,10));
+        //get all the data required from sample
+        sampleValuesAll = samples.map(object => object.sample_values);
+        sampleValues = sampleValuesAll.map(object => object.slice(0,10));
         otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
+        otuIDsAll = data.samples.map(object => object.otu_ids);
         otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
+
         sampleID = data.names;
 
+        //get all the data required from metaData
         metaAge = data.metadata.map(object => object.age);
         metaBbtype = data.metadata.map(object => object.bbtype);
         metaEthnicity = data.metadata.map(object => object.ethnicity);
@@ -100,39 +99,36 @@ function buildPlot(otuIDs,
     var data=[trace1];
 
     var layout = {
-            title: " Belly Button Biodiversity",
+            title: "Top 10 OTUs",
             height: 600,
             width: 600
     };
 
     Plotly.newPlot("bar", data, layout);
 
-    //====== Plot bubble chart ======
+    //====== Plot bubble chart, display all samples======
     var trace2 = {
-        x: IDs,
-        y: sampleValues[sampleIndex],
+        x: otuIDsAll[sampleIndex],
+        y: sampleValuesAll[sampleIndex],
         mode: 'markers',
+        text: otuLabels[sampleIndex],
         marker: {
-          color: bubbleID,
+          color: otuIDsAll[sampleIndex],
           opacity: [1, 0.8, 0.6, 0.4],
-          size: sampleValues[sampleIndex]
+          size: sampleValuesAll[sampleIndex]
         }
       };
       
       var data2 = [trace2];
       
       var layout2 = {
-        title: 'Marker Size and Color',
+        title: 'All OTUs',
         showlegend: false,
         height: 600,
         width: 1200
       };
       
       Plotly.newPlot('bubble', data2, layout2);
-
-
-
-
 
     //=====Create MetaData list
     metaSelection.append("ul")
@@ -149,39 +145,13 @@ buildOptions();
 
 function optionChanged(chosen) {
     console.log(chosen);
-    //metaSelection.innerHTML("");
-    //console.log(sampleValues);
-
-    // d3.json("samples.json").then((importedData) => {
-    //     var data1 = importedData[0];
-    //     console.log(data1);
-
-        // //Take out sample as an array
-        // var samples = data.samples;
-
-    //     // //Take out sample_value as an array & slice to top 10
-    //     var sampleValues = samples.map(object => object.sample_values);
-    //     sampleValues = sampleValues.map(object => object.slice(0,10));
-    //     var otuIDs = data.samples.map(object => object.otu_ids.slice(0,10));
-    //     var otuLabels = data.samples.map(object => object.otu_labels.slice(0,10));
-    //     var sampleID = data.names;
         
-        
+        //Find matching value choosen, return index number for ploting.
         for (var i=0; i<otuIDs.length; i++) {
             if (parseInt(chosen) === parseInt(sampleID[i]) ) {
                 var IndexOption = i;
-                //console.log(IndexOption, "found")
             }
-
-        //console.log(IndexOption);
         };
     
-    
-
     buildPlot(otuIDs, sampleValues, otuLabels, IndexOption);
-
-
-    
 }
-
-//d3.select("#selDataset").on("change", handleChange);
